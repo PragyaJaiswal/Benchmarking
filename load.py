@@ -156,7 +156,6 @@ def plot(dictionary, file, location=None):
 	# print(dictionary.keys())
 	for key in dictionary:
 		axes = dictionary.get(key)
-		# break
 		# print axes
 		print len(axes.get('y'))
 		print len(axes.get('x'))
