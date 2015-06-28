@@ -53,7 +53,7 @@ def parse(out):
 				dictionary = save_dict(IA, PP, str(file))
 				# if count == 10:
 				# 	break
-		plot_stat(dictionary, file, str(out + file + '/'))
+		plot_stat_1(dictionary, file, str(out + file + '/'))
 
 
 def save_dict(IA, PP, file):
@@ -132,7 +132,7 @@ def plot_stat(dictionary, file, location=None):
 	pylab.close()
 
 
-def plot_stat_1():
+def plot_stat_1(dictionary, file, location=None):
 	fig = pylab.figure()
 	count = 0
 	lis = sorted(dictionary.keys())
@@ -145,11 +145,11 @@ def plot_stat_1():
 		filename = str(file) + '.png'
 		
 		ax = fig.add_subplot(4, 2, (count))
-		ax.ticklabel_format(style='sci', axis = 'both', scilimits=(0,0))
+		ax.ticklabel_format(style='sci', axis = 'both', scilimits=(0,0), fontsize = 5.5)
 		ax.plot(axes.get('x'), axes.get('y'), str(1), color='0.4', marker='o', markeredgecolor='0.4')
-		ax.set_xlabel('iTRAQanalyzer')
-		ax.set_ylabel('Protein Pilot')
-		# pylab.rc('font', size=5.5)
+		ax.set_xlabel('iTRAQanalyzer', fontsize = 5.5)
+		ax.set_ylabel('Protein Pilot', fontsize = 5.5)
+		pylab.rc('font', size=5.5)
 
 		# z[0] denotes slope, z[1] denotes the intercept
 		z = np.polyfit(axes.get('x'), axes.get('y'), 1)
@@ -160,7 +160,11 @@ def plot_stat_1():
 		# print "y=%.6fx+(%.6f)"%(z[0],z[1])
 		print "y=%.6fx+(%.6f)"%(z[0],z[1])
 		print str(coeff[0][1])
-		ax.annotate(1, 0.6, "Coeff of corr: " + str(coeff[0][1]))
+		ax.annotate("y =%.6fx+(%.6f)"%(z[0],z[1]), xy=(1,0.1), xycoords='axes fraction',
+			fontsize=5.5, horizontalalignment='right', verticalalignment='bottom')
+		ax.annotate("Coeff of corr: " + str(coeff[0][1]), xy=(1,0), xycoords='axes fraction',
+			fontsize=5.5, horizontalalignment='right', verticalalignment='bottom')
+		pylab.title(str(key))
 		fig.tight_layout()
 
 		graph = pylab.gcf()
