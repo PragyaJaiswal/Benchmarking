@@ -1,5 +1,11 @@
 import os, sys
 import json, csv
+<<<<<<< HEAD
+=======
+import matplotlib.pyplot as plt
+import numpy as np
+import pylab
+>>>>>>> 11926d5... Made aesthetic modifications to plots. Added subplots.
 
 data = './data/'
 plot_data = './data/plot_data/'
@@ -41,9 +47,14 @@ def parse(out):
 						PP.append(line[stop])
 						# if index == stop:
 						# 	break
+<<<<<<< HEAD
 				save_dict(IA, PP, str(file))
+=======
+				dictionary = save_dict(IA, PP, str(file))
+>>>>>>> 11926d5... Made aesthetic modifications to plots. Added subplots.
 				# if count == 10:
 				# 	break
+		plot_stat(dictionary, file, str(out + file + '/'))
 
 
 def save_dict(IA, PP, file):
@@ -96,6 +107,79 @@ def jsonify(dict, location=None):
 		outfile.write(a)
 
 
+<<<<<<< HEAD
+=======
+# Scatter plot, linear fit and correlation coefficient. Save figures..
+def plot_stat(dictionary, file, location=None):
+	fig = pylab.figure()
+	count = 0
+	lis = sorted(dictionary.keys())
+
+	for key in lis:
+		count+=1
+		axes = dictionary.get(key)
+
+		# fig = pylab.figure()
+		filename = str(file) + '.png'
+		
+		fig.add_subplot(4, 2, (count))
+		pylab.ticklabel_format(style='sci', axis = 'both', scilimits=(0,0))
+		pylab.plot(axes.get('x'), axes.get('y'), str(1), color='0.4', marker='o', markeredgecolor='0.4')
+		pylab.xlabel('iTRAQanalyzer')
+		pylab.ylabel('Protein Pilot')
+		pylab.rc('font', size=5.5)
+
+		# z[0] denotes slope, z[1] denotes the intercept
+		z = np.polyfit(axes.get('x'), axes.get('y'), 1)
+		p = np.poly1d(z)
+		coeff = np.corrcoef(axes.get('x'), axes.get('y'))
+
+		pylab.plot(axes.get('x'), p(axes.get('x')), "r-", color='0')
+		# print "y=%.6fx+(%.6f)"%(z[0],z[1])
+		print "y=%.6fx+(%.6f)"%(z[0],z[1])
+		pylab.text(0.1, 0.3, "y=%.6fx+(%.6f)"%(z[0],z[1]))
+		print str(coeff[0][1])
+		pylab.text(1, 0.6, "Coeff of corr: " + str(coeff[0][1]))
+		pylab.title(str(key))
+		pylab.tight_layout()
+
+		graph = pylab.gcf()
+		graph.canvas.set_window_title(str(filename))		
+	
+	pylab.show()
+	graph.savefig(location + '/' + filename)
+	pylab.close()
+
+
+# Scatter plot and save figures
+def plot(dictionary, file, location=None):
+	# print(dictionary.keys())
+	for key in dictionary:
+		axes = dictionary.get(key)
+		# break
+		# print axes
+		print len(axes.get('y'))
+		print len(axes.get('x'))
+		
+		fig = plt.figure()
+		ax = fig.add_subplot(1, 1, 1)
+
+		# ax.scatter(axes.get('x'), axes.get('y'), c='r', marker='o')
+		ax.scatter(axes.get('x'), axes.get('y'))
+		ax.set_xlabel('IA')
+		ax.set_ylabel('PP')
+
+		filename = str(file) + '--' + str(key) + '.png'
+		fig.canvas.set_window_title(str(filename))
+		graph = plt.gcf()
+		plt.show()
+		# plt.draw()
+
+		graph.savefig(location + '/' + filename)
+		plt.close()
+
+
+>>>>>>> 11926d5... Made aesthetic modifications to plots. Added subplots.
 def parse_column_wise():
 	pass
 
