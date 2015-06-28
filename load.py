@@ -6,7 +6,6 @@ import pylab
 
 
 data = './data/'
-plot_data = './data/plot_data/'
 out = './output/'
 
 global dictionary
@@ -34,28 +33,30 @@ def parse(out):
 				IA = []
 				PP = []
 				count+=1
-				print 'Line Number: ' + str(count)
-				print 'Line: ' + str(line)
+				# print 'Line Number: ' + str(count)
+				# print 'Line: ' + str(line)
 				for index, ele in enumerate(line):
 					if index >= 5 and index < 13:
-						print 'index: ' + str(index)
-						print 'val: ' + str(line[index])
+						# print 'index: ' + str(index)
+						# print 'val: ' + str(line[index])
 						stop = int(index+8)
-						IA.append(ele)
-						PP.append(line[stop])
+						if ele == '' or ele == None:
+							ele = 0.0
+						if line[stop] == '' or line[stop] == None:
+							line[stop] = 0.0
+
+						IA.append(float(ele))
+						PP.append(float(line[stop]))
 						# if index == stop:
 						# 	break
 				save_dict(IA, PP, str(file))
 				dictionary = save_dict(IA, PP, str(file))
-
 				# if count == 10:
 				# 	break
 		plot_stat(dictionary, file, str(out + file + '/'))
 
 
 def save_dict(IA, PP, file):
-	print IA
-	print PP
 	keys = [
 		'113',
 		'114',
@@ -83,24 +84,8 @@ def save_dict(IA, PP, file):
 			dictionary[str(keys[index])]['x'].append(ele)
 			dictionary[str(keys[index])]['y'].append(PP[index])
 
-	jsonify(dictionary)
+	return dictionary
 	# jsonify(dictionary, './data/plot_data/')
-
-
-# def jsonify(dict):
-# 	d = json.dumps(dict, sort_keys=True, indent=4, separators=(',', ':'))
-# 	# print d
-# 	with open('./data/plot_data/IAvsPP.json', 'w') as outfile:
-# 		outfile.write(d)
-
-
-def jsonify(dict, location=None):
-	a = json.dumps(dict, sort_keys=True, indent=4, separators=(',', ': '))
-	with open('./data/plot_data/IAvsPP' + '.json', 'a') as outfile:
-		outfile.write(a)
-	with open('./data/plot_data/IAvsPP' + '.py', 'a') as outfile:
-		outfile.write('plot_data = ')
-		outfile.write(a)
 
 
 
@@ -108,6 +93,7 @@ def jsonify(dict, location=None):
 def plot_stat(dictionary, file, location=None):
 	fig = pylab.figure()
 	count = 0
+	print(type(dictionary))
 	lis = sorted(dictionary.keys())
 
 	for key in lis:
@@ -146,6 +132,45 @@ def plot_stat(dictionary, file, location=None):
 	pylab.close()
 
 
+def plot_stat_1():
+	fig = pylab.figure()
+	count = 0
+	lis = sorted(dictionary.keys())
+
+	for key in lis:
+		count+=1
+		axes = dictionary.get(key)
+
+		# fig = pylab.figure()
+		filename = str(file) + '.png'
+		
+		ax = fig.add_subplot(4, 2, (count))
+		ax.ticklabel_format(style='sci', axis = 'both', scilimits=(0,0))
+		ax.plot(axes.get('x'), axes.get('y'), str(1), color='0.4', marker='o', markeredgecolor='0.4')
+		ax.set_xlabel('iTRAQanalyzer')
+		ax.set_ylabel('Protein Pilot')
+		# pylab.rc('font', size=5.5)
+
+		# z[0] denotes slope, z[1] denotes the intercept
+		z = np.polyfit(axes.get('x'), axes.get('y'), 1)
+		p = np.poly1d(z)
+		coeff = np.corrcoef(axes.get('x'), axes.get('y'))
+
+		ax.plot(axes.get('x'), p(axes.get('x')), "r-", color='0')
+		# print "y=%.6fx+(%.6f)"%(z[0],z[1])
+		print "y=%.6fx+(%.6f)"%(z[0],z[1])
+		print str(coeff[0][1])
+		ax.annotate(1, 0.6, "Coeff of corr: " + str(coeff[0][1]))
+		fig.tight_layout()
+
+		graph = pylab.gcf()
+		graph.canvas.set_window_title(str(filename))		
+	
+	pylab.show()
+	graph.savefig(location + '/' + filename)
+	pylab.close()
+
+
 # Scatter plot and save figures
 def plot(dictionary, file, location=None):
 	# print(dictionary.keys())
@@ -172,13 +197,15 @@ def plot(dictionary, file, location=None):
 		graph.savefig(location + '/' + filename)
 		plt.close()
 
+
 def parse_column_wise():
 	pass
+
 
 def skip_header(tsv):
 	has_header = csv.Sniffer().has_header(tsv.read())
 	return has_header
 
 path_to_dir(out)
-path_to_dir(plot_data)
+# path_to_dir(plot_data)
 parse(out)
