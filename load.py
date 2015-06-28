@@ -1,11 +1,9 @@
 import os, sys
 import json, csv
-<<<<<<< HEAD
-=======
 import matplotlib.pyplot as plt
 import numpy as np
 import pylab
->>>>>>> 11926d5... Made aesthetic modifications to plots. Added subplots.
+
 
 data = './data/'
 plot_data = './data/plot_data/'
@@ -47,11 +45,9 @@ def parse(out):
 						PP.append(line[stop])
 						# if index == stop:
 						# 	break
-<<<<<<< HEAD
 				save_dict(IA, PP, str(file))
-=======
 				dictionary = save_dict(IA, PP, str(file))
->>>>>>> 11926d5... Made aesthetic modifications to plots. Added subplots.
+
 				# if count == 10:
 				# 	break
 		plot_stat(dictionary, file, str(out + file + '/'))
@@ -107,8 +103,7 @@ def jsonify(dict, location=None):
 		outfile.write(a)
 
 
-<<<<<<< HEAD
-=======
+
 # Scatter plot, linear fit and correlation coefficient. Save figures..
 def plot_stat(dictionary, file, location=None):
 	fig = pylab.figure()
@@ -177,8 +172,6 @@ def plot(dictionary, file, location=None):
 		graph.savefig(location + '/' + filename)
 		plt.close()
 
-
->>>>>>> 11926d5... Made aesthetic modifications to plots. Added subplots.
 def parse_column_wise():
 	pass
 
