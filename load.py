@@ -24,15 +24,18 @@ def path_to_dir(out):
 def parse(out):
 	files = os.listdir(data)
 	count = 0
+	line_num = 0
 	for file in files:
-		print file
+		count+=1
+		print 'Processing file: ' + str(count) + ' of ' + str(len(files))
+		print 'File name: ' + str(file)
 		with open(str(data) + file, 'r') as tsv:
 			reader = csv.reader(tsv, dialect = 'excel-tab', skipinitialspace = True)
 			next(reader, None)
 			for line in reader:
 				IA = []
 				PP = []
-				count+=1
+				line_num+=1
 				# print 'Line Number: ' + str(count)
 				# print 'Line: ' + str(line)
 				for index, ele in enumerate(line):
@@ -47,13 +50,11 @@ def parse(out):
 
 						IA.append(float(ele))
 						PP.append(float(line[stop]))
-						# if index == stop:
-						# 	break
 				save_dict(IA, PP, str(file))
 				dictionary = save_dict(IA, PP, str(file))
 				# if count == 10:
 				# 	break
-		plot_stat_1(dictionary, file, str(out + '/'))
+		plot_stat(dictionary, file, str(out + '/'))
 
 
 def save_dict(IA, PP, file):
@@ -69,7 +70,6 @@ def save_dict(IA, PP, file):
 	]
 
 	for index, ele in enumerate(IA):
-		# dictionary.setdefault(keys[index], {}).append('x')
 		if str(keys[index]) not in dictionary:
 			dictionary[str(keys[index])] = {}
 			if 'x' not in dictionary[str(keys[index])]:
@@ -89,8 +89,51 @@ def save_dict(IA, PP, file):
 
 
 
-# Scatter plot, linear fit and correlation coefficient. Save figures..
+# Scatter plot, linear fit and correlation coefficient. Save figures.
 def plot_stat(dictionary, file, location=None):
+	fig = pylab.figure()
+	count = 0
+	lis = sorted(dictionary.keys())
+
+	for key in lis:
+		count+=1
+		axes = dictionary.get(key)
+
+		# fig = pylab.figure()
+		filename = str(file[:-4]) + '.png'
+		
+		ax = fig.add_subplot(4, 2, (count))
+		ax.ticklabel_format(style='sci', axis = 'both', scilimits=(0,0), fontsize = 5.5)
+		ax.plot(axes.get('x'), axes.get('y'), str(1), color='0.4', marker='o', markeredgecolor='0.4')
+		ax.set_xlabel('iTRAQanalyzer', fontsize = 5.5)
+		ax.set_ylabel('Protein Pilot', fontsize = 5.5)
+		pylab.rc('font', size=5.5)
+
+		# z[0] denotes slope, z[1] denotes the intercept
+		z = np.polyfit(axes.get('x'), axes.get('y'), 1)
+		p = np.poly1d(z)
+		coeff = np.corrcoef(axes.get('x'), axes.get('y'))
+
+		ax.plot(axes.get('x'), p(axes.get('x')), "r-", color='0')
+
+		# print "y=%.6fx+(%.6f)"%(z[0],z[1])
+		# print str(coeff[0][1])
+		ax.annotate("y =%.6fx+(%.6f)"%(z[0],z[1]), xy=(1,0.1), xycoords='axes fraction',
+			fontsize=5.5, horizontalalignment='right', verticalalignment='bottom')
+		ax.annotate("Coeff of corr: " + str(coeff[0][1]), xy=(1,0), xycoords='axes fraction',
+			fontsize=5.5, horizontalalignment='right', verticalalignment='bottom')
+		pylab.title(str(key))
+		fig.tight_layout()
+
+		graph = pylab.gcf()
+		graph.canvas.set_window_title(str(filename))		
+	
+	# pylab.show()
+	graph.savefig(location + '/' + filename)
+	pylab.close()
+
+
+def plot_stat_1(dictionary, file, location=None):
 	fig = pylab.figure()
 	count = 0
 	print(type(dictionary))
@@ -126,50 +169,7 @@ def plot_stat(dictionary, file, location=None):
 		graph = pylab.gcf()
 		graph.canvas.set_window_title(str(filename))
 
-	pylab.show()
-	graph.savefig(location + '/' + filename)
-	pylab.close()
-
-
-def plot_stat_1(dictionary, file, location=None):
-	fig = pylab.figure()
-	count = 0
-	lis = sorted(dictionary.keys())
-
-	for key in lis:
-		count+=1
-		axes = dictionary.get(key)
-
-		# fig = pylab.figure()
-		filename = str(file[:-4]) + '.png'
-		
-		ax = fig.add_subplot(4, 2, (count))
-		ax.ticklabel_format(style='sci', axis = 'both', scilimits=(0,0), fontsize = 5.5)
-		ax.plot(axes.get('x'), axes.get('y'), str(1), color='0.4', marker='o', markeredgecolor='0.4')
-		ax.set_xlabel('iTRAQanalyzer', fontsize = 5.5)
-		ax.set_ylabel('Protein Pilot', fontsize = 5.5)
-		pylab.rc('font', size=5.5)
-
-		# z[0] denotes slope, z[1] denotes the intercept
-		z = np.polyfit(axes.get('x'), axes.get('y'), 1)
-		p = np.poly1d(z)
-		coeff = np.corrcoef(axes.get('x'), axes.get('y'))
-
-		ax.plot(axes.get('x'), p(axes.get('x')), "r-", color='0')
-		# print "y=%.6fx+(%.6f)"%(z[0],z[1])
-		print "y=%.6fx+(%.6f)"%(z[0],z[1])
-		print str(coeff[0][1])
-		ax.annotate("y =%.6fx+(%.6f)"%(z[0],z[1]), xy=(1,0.1), xycoords='axes fraction',
-			fontsize=5.5, horizontalalignment='right', verticalalignment='bottom')
-		ax.annotate("Coeff of corr: " + str(coeff[0][1]), xy=(1,0), xycoords='axes fraction',
-			fontsize=5.5, horizontalalignment='right', verticalalignment='bottom')
-		pylab.title(str(key))
-		fig.tight_layout()
-
-		graph = pylab.gcf()
-		graph.canvas.set_window_title(str(filename))		
-	
-	pylab.show()
+	# pylab.show()
 	graph.savefig(location + '/' + filename)
 	pylab.close()
 
@@ -203,7 +203,6 @@ def plot(dictionary, file, location=None):
 
 def parse_column_wise():
 	pass
-
 
 def skip_header(tsv):
 	has_header = csv.Sniffer().has_header(tsv.read())
