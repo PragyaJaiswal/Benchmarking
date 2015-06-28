@@ -100,7 +100,6 @@ def plot_stat(dictionary, file, location=None):
 		count+=1
 		axes = dictionary.get(key)
 
-		# fig = pylab.figure()
 		filename = str(file) + '.png'
 		
 		fig.add_subplot(4, 2, (count))
@@ -125,8 +124,8 @@ def plot_stat(dictionary, file, location=None):
 		pylab.tight_layout()
 
 		graph = pylab.gcf()
-		graph.canvas.set_window_title(str(filename))		
-	
+		graph.canvas.set_window_title(str(filename))
+
 	pylab.show()
 	graph.savefig(location + '/' + filename)
 	pylab.close()
@@ -142,7 +141,7 @@ def plot_stat_1(dictionary, file, location=None):
 		axes = dictionary.get(key)
 
 		# fig = pylab.figure()
-		filename = str(file) + '.png'
+		filename = str(file[:-4]) + '.png'
 		
 		ax = fig.add_subplot(4, 2, (count))
 		ax.ticklabel_format(style='sci', axis = 'both', scilimits=(0,0), fontsize = 5.5)
