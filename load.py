@@ -53,7 +53,7 @@ def parse(out):
 				dictionary = save_dict(IA, PP, str(file))
 				# if count == 10:
 				# 	break
-		plot_stat_1(dictionary, file, str(out + file + '/'))
+		plot_stat_1(dictionary, file, str(out + '/'))
 
 
 def save_dict(IA, PP, file):
@@ -211,5 +211,4 @@ def skip_header(tsv):
 	return has_header
 
 path_to_dir(out)
-# path_to_dir(plot_data)
 parse(out)
