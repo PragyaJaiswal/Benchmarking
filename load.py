@@ -11,6 +11,10 @@ out = './output/'
 global dictionary
 dictionary = {}
 
+
+'''
+Create the specified directory, if not exists.
+'''
 def path_to_dir(out):
 	if not os.path.exists(out) and not out == '':
 		os.makedirs(out)
@@ -20,6 +24,9 @@ def path_to_dir(out):
 		out = './output/'
 		os.makedirs(out)
 
+'''
+Parse tsv file and get corresponding columns in array.
+'''
 
 def parse(out):
 	files = os.listdir(data)
@@ -57,6 +64,10 @@ def parse(out):
 		plot_stat(dictionary, file, str(out + '/'))
 
 
+'''
+Save data in dictionary format.
+'''
+
 def save_dict(IA, PP, file):
 	keys = [
 		'113',
@@ -89,7 +100,12 @@ def save_dict(IA, PP, file):
 
 
 
-# Scatter plot, linear fit and correlation coefficient. Save figures.
+'''
+Scatter plot, linear fit and correlation coefficient.
+Display stat details on sub plots.
+Save figures.
+'''
+
 def plot_stat(dictionary, file, location=None):
 	fig = pylab.figure()
 	count = 0
@@ -118,9 +134,9 @@ def plot_stat(dictionary, file, location=None):
 
 		# print "y=%.6fx+(%.6f)"%(z[0],z[1])
 		# print str(coeff[0][1])
-		ax.annotate("y =%.6fx+(%.6f)"%(z[0],z[1]), xy=(1,0.1), xycoords='axes fraction',
+		ax.annotate("y =%.6fx + %.6f "%(z[0],z[1]), xy=(1,0.1), xycoords='axes fraction',
 			fontsize=5.5, horizontalalignment='right', verticalalignment='bottom')
-		ax.annotate("Coeff of corr: " + str(coeff[0][1]), xy=(1,0), xycoords='axes fraction',
+		ax.annotate("R " + str(coeff[0][1]), xy=(1,0), xycoords='axes fraction',
 			fontsize=5.5, horizontalalignment='right', verticalalignment='bottom')
 		pylab.title(str(key))
 		fig.tight_layout()
@@ -133,7 +149,13 @@ def plot_stat(dictionary, file, location=None):
 	pylab.close()
 
 
-def plot_stat_1(dictionary, file, location=None):
+'''
+Scatter plot, linear fit and correlation coefficients.
+Does not show equations and correlation coefficients on subplots.
+Save figures.
+'''
+
+def plot_stat_without_eq(dictionary, file, location=None):
 	fig = pylab.figure()
 	count = 0
 	print(type(dictionary))
@@ -158,11 +180,9 @@ def plot_stat_1(dictionary, file, location=None):
 		coeff = np.corrcoef(axes.get('x'), axes.get('y'))
 
 		pylab.plot(axes.get('x'), p(axes.get('x')), "r-", color='0')
-		# print "y=%.6fx+(%.6f)"%(z[0],z[1])
 		print "y=%.6fx+(%.6f)"%(z[0],z[1])
-		pylab.text(0.1, 0.3, "y=%.6fx+(%.6f)"%(z[0],z[1]))
+		# pylab.text(0.1, 0.3, "y=%.6fx+(%.6f)"%(z[0],z[1]))
 		print str(coeff[0][1])
-		pylab.text(1, 0.6, "Coeff of corr: " + str(coeff[0][1]))
 		pylab.title(str(key))
 		pylab.tight_layout()
 
@@ -174,7 +194,10 @@ def plot_stat_1(dictionary, file, location=None):
 	pylab.close()
 
 
-# Scatter plot and save figures
+'''
+Scatter plot and save figures
+'''
+
 def plot(dictionary, file, location=None):
 	# print(dictionary.keys())
 	for key in dictionary:
