@@ -138,10 +138,10 @@ def plot_stat(dictionary, file, location=None):
 		# print "y=%.6fx+(%.6f)"%(z[0],z[1])
 		# print coeff[0][1]
 		
-		ax.annotate("y =%.6fx + %.6f "%(z[0],z[1]), xy=(1,0.11), xycoords='axes fraction',
+		ax.annotate("y = %.6fx + %.6f "%(z[0],z[1]), xy=(0.97,0.15), xycoords='axes fraction',
 			fontsize=5.5, horizontalalignment='right', verticalalignment='bottom')
 		
-		ax.annotate("$\mathregular{R^2}$ " + ': ' + str(round(coeff[0][1], 4)), xy=(1,0), xycoords='axes fraction',
+		ax.annotate("$\mathregular{R^2}$" + ': ' + str(round(coeff[0][1], 4)), xy=(0.97,0.04), xycoords='axes fraction',
 			fontsize=5.5, horizontalalignment='right', verticalalignment='bottom')
 		pylab.title(str(key))
 		fig.tight_layout()
@@ -150,7 +150,8 @@ def plot_stat(dictionary, file, location=None):
 		graph.canvas.set_window_title(str(filename))		
 	
 	# pylab.show()
-	graph.savefig(location + '/' + filename)
+	fig.dpi = 800
+	graph.savefig(location + '/' + filename, dpi = fig.dpi)
 	pylab.close()
 
 
