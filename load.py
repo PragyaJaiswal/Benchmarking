@@ -1,6 +1,9 @@
 import os, sys
 import json, csv
+from sympy import pprint as pp
+from sympy.abc import R
 import matplotlib.pyplot as plt
+from matplotlib import gridspec
 import numpy as np
 import pylab
 
@@ -108,6 +111,7 @@ Save figures.
 
 def plot_stat(dictionary, file, location=None):
 	fig = pylab.figure()
+	# gs = gridspec.GridSpec(4, 2, width_ratios=[.5,.5])
 	count = 0
 	lis = sorted(dictionary.keys())
 
@@ -115,7 +119,6 @@ def plot_stat(dictionary, file, location=None):
 		count+=1
 		axes = dictionary.get(key)
 
-		# fig = pylab.figure()
 		filename = str(file[:-4]) + '.png'
 		
 		ax = fig.add_subplot(4, 2, (count))
@@ -133,10 +136,12 @@ def plot_stat(dictionary, file, location=None):
 		ax.plot(axes.get('x'), p(axes.get('x')), "r-", color='0')
 
 		# print "y=%.6fx+(%.6f)"%(z[0],z[1])
-		# print str(coeff[0][1])
-		ax.annotate("y =%.6fx + %.6f "%(z[0],z[1]), xy=(1,0.1), xycoords='axes fraction',
+		# print coeff[0][1]
+		
+		ax.annotate("y =%.6fx + %.6f "%(z[0],z[1]), xy=(1,0.11), xycoords='axes fraction',
 			fontsize=5.5, horizontalalignment='right', verticalalignment='bottom')
-		ax.annotate("R " + str(coeff[0][1]), xy=(1,0), xycoords='axes fraction',
+		
+		ax.annotate("$\mathregular{R^2}$ " + ': ' + str(round(coeff[0][1], 4)), xy=(1,0), xycoords='axes fraction',
 			fontsize=5.5, horizontalalignment='right', verticalalignment='bottom')
 		pylab.title(str(key))
 		fig.tight_layout()
