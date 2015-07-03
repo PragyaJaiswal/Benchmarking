@@ -6,7 +6,7 @@ my $count = 0;
 my $pp_dir = 'D:\\ICGEB LAB\\Benchmarking of Quantwiz\\protein_pilot_results\\';
 my $itraq_dir = 'D:\\ICGEB LAB\\Benchmarking of Quantwiz\\iTRAQ_consensus_xml\\output\\';
 
-$dir = './output/';
+my $dir = 'D:/ICGEB Lab/Benchmarking of Quantwiz/protein_pilot_results/output/';
 mkdir $dir unless -d $dir;
 
 opendir (PP_DIR, $pp_dir) or die "Cannot open directory $pp_dir: $!";
@@ -66,64 +66,91 @@ closedir(iTRAQ_DIR);
 
 sub compare {
 	my ($file_1, $file_2, $comp) = @_;
-	print "$file_1\n";
-	print "$file_2\n";
+	# print "$file_1\n";
+	# print "$file_2\n";
 	my $file_a = $pp_dir . $file_1;
 	my $file_b = $itraq_dir . $file_2;
+	# print $file_a;
+	# print $file_b;
 	my $outfile = $comp . "_comparison";
-	open(IN1, $file_a) or die $!;
-	open(IN2, $file_b) or die $!;
-	print "IN1";
-	print "IN2";
-	open(OUT,">.\\output\\outfile") or die $!;
-	print OUT "RTIN\tRTINPP\tRTIN_itaz\tMZ_itrq\tMZitaz\ttittle_itrq\ttotal_it_itaz\t113_itaz\t114\t115\t116\t117\t118\t119\t121\t114:113\t115:113\t116:113\t117:113\t118:113\t119:113\t121:113\tdecoy\n";
-	my @arr1=<IN1>;#pp
-	shift @arr1;
-	while (<IN2>)
-	{
-		chomp $_;
-		if ($_=~m/^ID/) {
-			
+	open(IN1, "$file_a") or die $!;
+	# open(IN2, "$file_b") or die $!;
+	open(OUT,">$dir\\$outfile") or die $!;
+	
+	my @pp=<IN1>;
+	my $header=shift(@pp);
+	my %pp;
+	foreach my $line(@pp) {
+		chomp $line;
+		my @prpi=split/\t/,$line;
+		if ($prpi[26] == 1) {
+				next;		#26 = decoy
 		}
-		else {
-			my @line2=split/\t/,$_;
-			foreach my $lane(@arr1) {
-				chomp $lane;
-				my @line1=split/\t/,$lane;
-				my $t1=$line1[23]*60;
-				my $RT1=sprintf("%.2f",$t1);
-				my $RT2=sprintf("%.2f",$line2[1]);
-				my $mz=$line1[17];
-				# print "$line2[1]\t$line1[2]\t$mz";<>;
-				my $mz1=sprintf("%.2f",$mz);
-				my $mz2=sprintf("%.2f",$line2[2]);
-				if ( $RT1== $RT2 && $mz1 == $mz2) {
-					print OUT "$RT1\t$line1[23]\t$line2[1]\t$mz\t$line2[2]\t$line1[22]\t$line2[3]\t".$line2[4]."\t".$line2[5]."\t".$line2[6]."\t".$line2[7]."\t".$line2[8]."\t".$line2[9]."\t".$line2[10]."\t".$line2[11]."\t";
-				   
+		my $rt=sprintf("%.2f",($prpi[23]*60));	# Converting rt in seconds
+		my $mz=sprintf("%.2f",$prpi[17]);
+		$pp{$rt}{$mz}=$line;
+	}
+	
+	# Author - Suruchi Aggarwal, Pragya Jaiswal
+	########################################################################################################
+	open(IN2,"$file_b") or die $!;
+	my @ia=<IN2>;
+	my $header2=shift (@ia);
+	my %ia;
+	foreach my $line(@ia) {
+		chomp $line;
+		my @ial=split/\t/,$line;
+		my $mz=sprintf("%.2f",$ial[2]);
+		my $RT=sprintf("%.2f",$ial[1]);
+		$ia{$RT}{$mz}=$line;
+	}
+	
+	#########################################################################################################
+	print OUT "RT\tPP_RT\tIA_RT\tMZ\tPP_MZ\tIA_MZ\tPP_tittle\tTI_IA\t";
+	chomp $header2;
+	my @IA_head=split/\t/,$header2;
+	for(my $i=4; $i<@IA_head; $i++) {
+		print OUT "IA_$IA_head[$i]\t";
+	}
+	print OUT "IA_114:113\tIA_115:113\tIA_116:113\tIA_117:113\tIA_118:113\tIA_119:113\tIA_121:113\t";
+	chomp $header;
+	my @pp_head=split/\t/,$header;
+	for(my $i=26;$i<@pp_head-1;$i++) {
+		print OUT "PP_$pp_head[$i]\t";
+	}
+	print OUT "\n";
+	foreach my $rt(sort (keys %pp)) {
+		if (exists $ia{$rt}) {
+			foreach my $mz(sort keys %{$pp{$rt}}) {
+				if (exists $ia{$rt}{$mz}) {
+					#print "$rt\t$mz\t";<>;
+					my @line1=split/\t/,$pp{$rt}{$mz};
+					my @line2=split/\t/,$ia{$rt}{$mz};
+					print OUT "$rt\t$line1[23]\t$line2[1]\t$mz\t$line1[17]\t$line2[2]\t$line1[22]\t$line2[3]\t".$line2[4]."\t".$line2[5]."\t".$line2[6]."\t".$line2[7]."\t".$line2[8]."\t".$line2[9]."\t".$line2[10]."\t".$line2[11]."\t";
 					for(my $i=5;$i<=$#line2; $i++) {
 						if ($line2[4]==0) {
 							if ($line2[$i]==0 || $line2[$i]<0) {
-									print OUT "0\t";
+								print OUT "0\t";
 							}
 							if ($line2[$i]>0) {
-							 print OUT "100\t";
+								print OUT "100\t";
 							}
 						}
 						elsif($line2[4]>0) {
-							if ($line2[$i]==0 || $line2[$i]<0) {
+							if ($line2[$i] == 0 || $line2[$i] < 0) {
 								print OUT "0.01\t";
 							}
 							else {
-							print OUT $line2[$i]/$line2[4],"\t";
-						   }
+								print OUT $line2[$i]/$line2[4],"\t";
+							}
 						}
 					}
-					for(my $i=26; $i<@line1-1;$i++) {
+					for(my $i = 26; $i < @line1-1; $i++) {
 						print OUT "$line1[$i]\t";
 					}
-					print OUT "\n";	
-				}
-			}
+					print OUT "\n";
+				}	
+			}	
 		}
 	}
 }
