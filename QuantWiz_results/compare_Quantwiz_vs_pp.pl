@@ -76,4 +76,71 @@ sub compare {
 	my $outfile = $comp . "_comparison";
 	open(OUT,">$dir\\$outfile") or die $!;
 
+	# Author - Suruchi Aggarwal, Pragya Jaiswal
+	open(IN1,$file_a) or die $!;
+	my @pp=<IN1>;
+	my $header=shift(@pp);
+	my %pp;
+	foreach my $line(@pp) {
+		chomp $line;
+		my @prpi=split/\t/,$line;
+		if ($prpi[26] == 1) {
+			next;		#26 = decoy
+		}
+		
+		my $rt=sprintf("%.2f",($prpi[23]*60));#converting rt in seconds
+		my $mz=sprintf("%.2f",$prpi[17]);
+		$pp{$rt}{$mz}=$line;
+	}
+
+
+	open(IN2,$file_b) or die $!;
+	my @QW=<IN2>;
+	my $header2=shift(@QW);
+	my %qw;
+	foreach my $line(@QW) {
+		chomp $line;
+		my @qwl=split/\t/,$line;
+		my $mz1=(split/\s+/,$qwl[2])[0]; ##separate mz and base intensity
+		my $mz=sprintf("%.2f",$mz1);
+		my $RT=sprintf("%.2f",$qwl[1]);
+		$qw{$RT}{$mz}=$line;
+	}
+
+	
+	print OUT "RT\tPP_RT\tQW_RT\tMZ\tPP_MZ\tQW_MZ\tPP_title\tQW_title\t";
+	chomp $header2;
+	my @QW_head=split/\t/,$header2;
+	for(my $i=3;$i<@QW_head;$i++) {
+		print OUT "QW_$QW_head[$i]\t";
+	}
+	chomp $header;
+	my @pp_head=split/\t/,$header;
+	for(my $i=26;$i<@pp_head-1;$i++) {
+		print OUT "PP_$pp_head[$i]\t";
+	}
+
+	print OUT "\n";
+	foreach my $rt(sort (keys %pp)) {
+		if (exists $qw{$rt}) {
+			foreach my $mz(sort keys %{$pp{$rt}}) {
+				if (exists $qw{$rt}{$mz}) {
+					#print "$rt\t$mz\t";<>;
+					my @line1=split/\t/,$pp{$rt}{$mz};
+					my @line2=split/\t/,$qw{$rt}{$mz};
+					print OUT "$rt\t$line1[23]\t$line2[1]\t$mz\t$line1[17]\t$line2[2]\t$line1[22]\t$line2[0]\t";
+					for(my $i=3;$i<@line2;$i++) {
+						print OUT "$line2[$i]\t";
+					}
+					for(my $i=26; $i<@line1-1;$i++) {
+						print OUT "$line1[$i]\t";
+					}
+					print OUT "\n";
+				}
+				
+			}
+			
+		}
+		
+	}
 }
