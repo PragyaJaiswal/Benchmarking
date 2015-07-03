@@ -75,4 +75,101 @@ sub compare {
 	my $outfile = $comp . "_comparison";
 	open(OUT,">$dir\\$outfile") or die $!;
 
+	# Author - Suruchi Aggarwal, Pragya Jaiswal
+	open(IN1,$file_a) or die $!;
+	my @ia=<IN1>;
+	my $header=shift (@ia);
+	my %ia;
+	foreach my $line(@ia)
+	{
+		chomp $line;
+		my @ial=split/\t/,$line;
+		my $mz=sprintf("%.2f",$ial[2]);
+		my $RT=sprintf("%.2f",$ial[1]);
+		$ia{$RT}{$mz}=$line;
+	}
+
+
+	open(IN2,$file_b) or die $!;
+	my @QW=<IN2>;
+	my $header2=shift(@QW);
+	my %qw;
+	foreach my $line(@QW)
+	{
+		chomp $line;
+		my @qwl=split/\t/,$line;
+		my $mz1=(split/\s+/,$qwl[2])[0];##separate mz and base intensity
+		my $mz=sprintf("%.2f",$mz1);
+		my $RT=sprintf("%.2f",$qwl[1]);
+		$qw{$RT}{$mz}=$line;
+	}
+
+	print OUT "RT\tIA_RT\tQW_RT\tMZ\tIA_MZ\tQW_MZ\tIA_TI\tQW_title\t";
+	chomp $header2;
+	my @QW_head=split/\t/,$header2;
+	for(my $i=3;$i<@QW_head;$i++)
+	{
+		print OUT "QW_$QW_head[$i]\t";
+	}
+	chomp $header;
+	my @IA_head=split/\t/,$header;
+	for(my $i=4;$i<@IA_head;$i++)
+	{
+		print OUT "IA_$IA_head[$i]\t";
+	}
+	print OUT "IA_114:113\tIA_115:113\tIA_116:113\tIA_117:113\tIA_118:113\tIA_119:113\tIA_121:113\t";
+	print OUT "\n";
+	foreach my $rt(sort (keys %ia))
+	{
+		if (exists $qw{$rt})
+		{
+			foreach my $mz(sort keys %{$ia{$rt}})
+			{
+				if (exists $qw{$rt}{$mz})
+				{
+					#print "$rt\t$mz\t";<>;
+					my @line1=split/\t/,$ia{$rt}{$mz};
+					my @line2=split/\t/,$qw{$rt}{$mz};
+					print OUT "$rt\t$line1[1]\t$line2[1]\t$mz\t$line1[2]\t$line2[2]\t$line1[3]\t$line2[0]\t";
+					for(my $i=3;$i<@line2;$i++)
+					{
+						print OUT "$line2[$i]\t";
+					}
+					for(my $i=4;$i<@line1;$i++)
+					{
+						print OUT "$line1[$i]\t";
+					}
+					for(my $i=5;$i<=$#line1; $i++)
+					{
+						if ($line1[4]==0)
+						{
+							if ($line1[$i]==0 || $line1[$i]<0)
+							{
+								print OUT "0\t";
+							}
+							if ($line1[$i]>0)
+							{
+								print OUT "100\t";
+							}
+							
+						}
+						elsif($line1[4]>0)
+						{
+							if ($line1[$i]==0 || $line1[$i]<0)
+							{
+								print OUT "0.01\t";
+							}
+							else
+							{
+								print OUT $line1[$i]/$line1[4],"\t";
+							}
+						}   
+					}
+					print OUT "\n";
+					}
+				
+			}
+			
+		}	
+	}
 }
