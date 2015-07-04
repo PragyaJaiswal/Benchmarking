@@ -4,7 +4,7 @@ use warnings;
 
 my $count = 0;
 my $pp_dir = 'D:\\ICGEB LAB\\Benchmarking of Quantwiz\\protein_pilot_results\\';
-my $qw_dir = 'D:\\ICGEB LAB\\Benchmarking of Quantwiz\\Quantwiz_results\\';
+my $qw_dir = 'D:\\ICGEB LAB\\Benchmarking of Quantwiz\\QuantWiz_results\\';
 
 my $dir = 'D:/ICGEB Lab/Benchmarking of Quantwiz/Quantwiz_results/QW_vs_PP_output/';
 mkdir $dir unless -d $dir;
