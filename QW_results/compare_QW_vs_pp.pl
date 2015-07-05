@@ -6,7 +6,7 @@ my $count = 0;
 my $pp_dir = 'D:\\ICGEB LAB\\Benchmarking of QW\\protein_pilot_results\\';
 my $qw_dir = 'D:\\ICGEB LAB\\Benchmarking of QW\\QW_results\\';
 
-my $dir = 'D:/ICGEB Lab/Benchmarking of Quantwiz/Quantwiz_results/QW_vs_PP_output/';
+my $dir = 'D:/ICGEB Lab/Benchmarking of QW/QW_results/QW_vs_PP_output/';
 mkdir $dir unless -d $dir;
 
 opendir (PP_DIR, $pp_dir) or die "Cannot open directory $pp_dir: $!";
