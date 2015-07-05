@@ -6,7 +6,7 @@ my $count = 0;
 my $itraq_dir = 'D:\\ICGEB LAB\\Benchmarking of QW\\iTRAQ_consensus_xml\\output\\';
 my $qw_dir = 'D:\\ICGEB LAB\\Benchmarking of QW\\QW_results\\';
 
-my $dir = 'D:/ICGEB Lab/Benchmarking of Quantwiz/Quantwiz_results/QW_vs_iTRAQ_output/';
+my $dir = 'D:/ICGEB Lab/Benchmarking of QW/QW_results/QW_vs_iTRAQ_output/';
 mkdir $dir unless -d $dir;
 
 opendir (iTRAQ_DIR, $itraq_dir) or die "Cannot open directory $itraq_dir: $!";
