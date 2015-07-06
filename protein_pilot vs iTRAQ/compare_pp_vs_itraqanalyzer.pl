@@ -3,10 +3,10 @@ use strict;
 use warnings;
 
 my $count = 0;
-my $pp_dir = 'D:\\ICGEB LAB\\Benchmarking of Quantwiz\\protein_pilot_results\\';
-my $itraq_dir = 'D:\\ICGEB LAB\\Benchmarking of Quantwiz\\iTRAQ_consensus_xml\\output\\';
+my $pp_dir = 'D:\\ICGEB LAB\\Benchmarking of QW\\protein_pilot_results\\';
+my $itraq_dir = 'D:\\ICGEB LAB\\Benchmarking of QW\\iTRAQ_consensus_xml\\output\\';
 
-my $dir = 'D:/ICGEB Lab/Benchmarking of Quantwiz/protein_pilot_results/output/';
+my $dir = 'D:/ICGEB Lab/Benchmarking of QW/protein_pilot_results/output/';
 mkdir $dir unless -d $dir;
 
 opendir (PP_DIR, $pp_dir) or die "Cannot open directory $pp_dir: $!";
@@ -92,7 +92,7 @@ sub compare {
 	}
 	
 	# Author - Suruchi Aggarwal, Pragya Jaiswal
-	########################################################################################################
+	
 	open(IN2,"$file_b") or die $!;
 	my @ia=<IN2>;
 	my $header2=shift (@ia);
@@ -105,7 +105,7 @@ sub compare {
 		$ia{$RT}{$mz}=$line;
 	}
 	
-	#########################################################################################################
+	
 	print OUT "RT\tPP_RT\tIA_RT\tMZ\tPP_MZ\tIA_MZ\tPP_tittle\tTI_IA\t";
 	chomp $header2;
 	my @IA_head=split/\t/,$header2;
