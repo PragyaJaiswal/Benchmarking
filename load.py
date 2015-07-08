@@ -1,7 +1,7 @@
 import os, sys
 import json, csv
-from sympy import pprint as pp
-from sympy.abc import R
+# from sympy import pprint as pp
+# from sympy.abc import R
 import matplotlib.pyplot as plt
 from matplotlib import gridspec
 import numpy as np
@@ -110,7 +110,7 @@ Save figures.
 '''
 
 def plot_stat(dictionary, file, location=None):
-	fig = pylab.figure()
+	fig = pylab.figure(figsize=(7,10))
 	# gs = gridspec.GridSpec(4, 2, width_ratios=[.5,.5])
 	count = 0
 	lis = sorted(dictionary.keys())
@@ -121,10 +121,11 @@ def plot_stat(dictionary, file, location=None):
 
 		filename = str(file[:-4]) + '.png'
 		
-		ax = fig.add_subplot(4, 2, (count))
+		ax = fig.add_subplot(4, 2, (count), adjustable='box-forced')
 		ax.ticklabel_format(style='sci', axis = 'both', scilimits=(0,0), fontsize = 5.5)
-		ax.plot(axes.get('x'), axes.get('y'), str(1), color='0.4', marker='o', markeredgecolor='0.4')
-		ax.set_xlabel('iTRAQanalyzer', fontsize = 5.5)
+		ax.plot(axes.get('x'), axes.get('y'), str(1), color='0.7',
+			marker='o', markeredgecolor='0.3', alpha=0.5)
+		ax.set_xlabel('iTRAQAnalyzer', fontsize = 5.5)
 		ax.set_ylabel('Protein Pilot', fontsize = 5.5)
 		pylab.rc('font', size=5.5)
 
@@ -138,8 +139,12 @@ def plot_stat(dictionary, file, location=None):
 		# print "y=%.6fx+(%.6f)"%(z[0],z[1])
 		# print coeff[0][1]
 		
-		ax.annotate("y = %.6fx + %.6f "%(z[0],z[1]), xy=(0.97,0.15), xycoords='axes fraction',
-			fontsize=5.5, horizontalalignment='right', verticalalignment='bottom')
+		if z[1] >= 0:
+			ax.annotate("y = %.6fx + %.6f "%(z[0],z[1]), xy=(0.97,0.10), xycoords='axes fraction',
+				fontsize=5.5, horizontalalignment='right', verticalalignment='bottom')
+		else:
+			ax.annotate("y = %.6fx - %.6f "%(z[0],abs(z[1])), xy=(0.97,0.10), xycoords='axes fraction',
+				fontsize=5.5, horizontalalignment='right', verticalalignment='bottom')
 		
 		ax.annotate("$\mathregular{R^2}$" + ': ' + str(round(coeff[0][1], 4)), xy=(0.97,0.04), xycoords='axes fraction',
 			fontsize=5.5, horizontalalignment='right', verticalalignment='bottom')
@@ -176,7 +181,7 @@ def plot_stat_without_eq(dictionary, file, location=None):
 		fig.add_subplot(4, 2, (count))
 		pylab.ticklabel_format(style='sci', axis = 'both', scilimits=(0,0))
 		pylab.plot(axes.get('x'), axes.get('y'), str(1), color='0.4', marker='o', markeredgecolor='0.4')
-		pylab.xlabel('iTRAQanalyzer')
+		pylab.xlabel('iTRAQAnalyzer')
 		pylab.ylabel('Protein Pilot')
 		pylab.rc('font', size=5.5)
 
