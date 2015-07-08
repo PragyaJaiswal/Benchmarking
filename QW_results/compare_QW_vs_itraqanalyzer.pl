@@ -42,7 +42,6 @@ while (my $itraq_file = readdir(iTRAQ_DIR)) {
 			# print "Protein Pilot filename: $comp\n";
 			
 			# if ($pp_count == 5) {
-			# 	print "Ending.";
 			# 	last;
 			# }
 			if ($filename eq $comp) {
