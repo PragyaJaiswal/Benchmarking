@@ -155,7 +155,7 @@ def plot_stat(dictionary, file, location=None):
 		graph.canvas.set_window_title(str(filename))		
 	
 	# pylab.show()
-	fig.dpi = 800
+	fig.dpi = 100
 	graph.savefig(location + '/' + filename, dpi = fig.dpi)
 	pylab.close()
 
