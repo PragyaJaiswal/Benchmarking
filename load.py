@@ -1,19 +1,12 @@
 import os, sys
 import json, csv
-# from sympy import pprint as pp
-# from sympy.abc import R
 import matplotlib.pyplot as plt
 from matplotlib import gridspec
 import numpy as np
 import pylab
+import optparse
 
-
-data = './data/'
-out = './output/'
-
-global dictionary
 dictionary = {}
-
 
 '''
 Create the specified directory, if not exists.
@@ -36,35 +29,34 @@ def parse(out):
 	count = 0
 	line_num = 0
 	for file in files:
-		count+=1
-		print 'Processing file: ' + str(count) + ' of ' + str(len(files))
-		print 'File name: ' + str(file)
-		with open(str(data) + file, 'r') as tsv:
-			reader = csv.reader(tsv, dialect = 'excel-tab', skipinitialspace = True)
-			next(reader, None)
-			for line in reader:
-				IA = []
-				PP = []
-				line_num+=1
-				# print 'Line Number: ' + str(count)
-				# print 'Line: ' + str(line)
-				for index, ele in enumerate(line):
-					if index >= 5 and index < 13:
-						# print 'index: ' + str(index)
-						# print 'val: ' + str(line[index])
-						stop = int(index+8)
-						if ele == '' or ele == None:
-							ele = 0.0
-						if line[stop] == '' or line[stop] == None:
-							line[stop] = 0.0
+		if file.endswith('.tsv'):
+			count+=1
+			print 'Processing file: ' + str(count) + ' of ' + str(len(files))
+			print 'File name: ' + str(file)
+			with open(str(data) + file, 'r') as tsv:
+				reader = csv.reader(tsv, dialect = 'excel-tab', skipinitialspace = True)
+				next(reader, None)
+				for line in reader:
+					IA = []
+					PP = []
+					line_num+=1
+					for index, ele in enumerate(line):
+						if index >= 8 and index <= 15:
+							if index == 8:
+								stop = int(index+30)
+							else:
+								stop = int(index+30+2)
 
-						IA.append(float(ele))
-						PP.append(float(line[stop]))
-				save_dict(IA, PP, str(file))
-				dictionary = save_dict(IA, PP, str(file))
-				# if count == 10:
-				# 	break
-		plot_stat(dictionary, file, str(out + '/'))
+							if ele == '' or ele == None:
+								ele = 0.0
+							if line[stop] == '' or line[stop] == None:
+								line[stop] = 0.0
+
+							IA.append(float(ele))
+							PP.append(float(line[stop]))
+					save_dict(IA, PP, str(file))
+					dictionary = save_dict(IA, PP, str(file))
+			plot_stat(dictionary, file, str(out + '/'))
 
 
 '''
@@ -135,19 +127,13 @@ def plot_stat(dictionary, file, location=None):
 		coeff = np.corrcoef(axes.get('x'), axes.get('y'))
 
 		ax.plot(axes.get('x'), p(axes.get('x')), "r-", color='0')
-
-		# print "y=%.6fx+(%.6f)"%(z[0],z[1])
-		# print coeff[0][1]
 		
 		if z[1] >= 0:
-			ax.annotate("y = %.6fx + %.6f "%(z[0],z[1]), xy=(0.97,0.10), xycoords='axes fraction',
-				fontsize=5.5, horizontalalignment='right', verticalalignment='bottom')
+			ax.annotate("y = %.6fx + %.6f "%(z[0],z[1]), xy=(0.97,0.10),xycoords='axes fraction', fontsize=5.5, horizontalalignment='right', verticalalignment='bottom')
 		else:
-			ax.annotate("y = %.6fx - %.6f "%(z[0],abs(z[1])), xy=(0.97,0.10), xycoords='axes fraction',
-				fontsize=5.5, horizontalalignment='right', verticalalignment='bottom')
+			ax.annotate("y = %.6fx - %.6f "%(z[0],abs(z[1])), xy=(0.97,0.10), xycoords='axes fraction', fontsize=5.5, horizontalalignment='right', verticalalignment='bottom')
 		
-		ax.annotate("$\mathregular{R^2}$" + ': ' + str(round(coeff[0][1], 4)), xy=(0.97,0.04), xycoords='axes fraction',
-			fontsize=5.5, horizontalalignment='right', verticalalignment='bottom')
+		ax.annotate("$\mathregular{R^2}$" + ': ' + str(round(coeff[0][1], 4)), xy=(0.97,0.04), xycoords='axes fraction', fontsize=5.5,horizontalalignment='right', verticalalignment='bottom')
 		pylab.title(str(key))
 		fig.tight_layout()
 
@@ -155,8 +141,8 @@ def plot_stat(dictionary, file, location=None):
 		graph.canvas.set_window_title(str(filename))		
 	
 	# pylab.show()
-	# fig.dpi = 100
-	graph.savefig(location + '/' + filename)
+	fig.dpi = 400
+	graph.savefig(location + '/' + filename, dpi = fig.dpi)
 	pylab.close()
 
 
@@ -200,7 +186,6 @@ def plot_stat_without_eq(dictionary, file, location=None):
 		graph = pylab.gcf()
 		graph.canvas.set_window_title(str(filename))
 
-	# pylab.show()
 	graph.savefig(location + '/' + filename)
 	pylab.close()
 
@@ -213,7 +198,6 @@ def plot(dictionary, file, location=None):
 	# print(dictionary.keys())
 	for key in dictionary:
 		axes = dictionary.get(key)
-		# print axes
 		print len(axes.get('y'))
 		print len(axes.get('x'))
 		
@@ -229,7 +213,6 @@ def plot(dictionary, file, location=None):
 		fig.canvas.set_window_title(str(filename))
 		graph = plt.gcf()
 		plt.show()
-		# plt.draw()
 
 		graph.savefig(location + '/' + filename)
 		plt.close()
@@ -238,9 +221,48 @@ def plot(dictionary, file, location=None):
 def parse_column_wise():
 	pass
 
+
 def skip_header(tsv):
 	has_header = csv.Sniffer().has_header(tsv.read())
 	return has_header
 
-path_to_dir(out)
-parse(out)
+
+def main():
+	global out
+	global data
+
+	# data = '../protein_pilot_results/output/'
+	# out = '../protein_pilot_results/plot_output/'
+
+	parser = optparse.OptionParser()
+	parser.add_option("-d", "--input", action="store", dest="data_dir",
+						help="Data directory")
+	parser.add_option("-o", "--output", action="store", dest="output_dir",
+						help="Directory for plots that are output.")
+
+	(options, args) = parser.parse_args()
+
+	if not options.data_dir:
+		data = './data/'
+	else:
+		if not options.data_dir[:-1] == '\\':
+			data = options.data_dir + '\\'
+		else:
+			data = options.data_dir
+		print 'Fetching data from directory: ' + str(data)
+
+
+	if not options.output_dir:
+		out = './plot_output/'
+	else:
+		if not options.output_dir[:-1] == '\\':
+			out = options.output_dir + '\\'
+		else:
+			out = options.output_dir
+		path_to_dir(out)
+		print 'Writing output plots to directory: ' + str(out)
+
+
+if __name__ == '__main__':
+	main()
+	parse(out)
