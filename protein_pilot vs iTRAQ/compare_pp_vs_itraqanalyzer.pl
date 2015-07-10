@@ -26,7 +26,7 @@ while (my $itraq_file = readdir(iTRAQ_DIR)) {
 		$filename =~ s/\.tsv//;
 		print "iTRAQ filename: $filename\n";
 		
-		# while (my $pp_file = readdir(PP_DIR)) {
+		
 		foreach my $pp_file (@pp_files) {
 			# print "Protein Pilot file: $pp_file\n";			
 			$pp_total_done += 1;
@@ -40,7 +40,6 @@ while (my $itraq_file = readdir(iTRAQ_DIR)) {
 
 			my $comp = $pp_file;
 			$comp =~ s/\_SpectrumSummary.txt//;
-			# print "Protein Pilot filename: $comp\n";
 			
 			# if ($pp_count == 5) {
 			# 	print "Ending.";
@@ -66,15 +65,11 @@ closedir(iTRAQ_DIR);
 
 sub compare {
 	my ($file_1, $file_2, $comp) = @_;
-	# print "$file_1\n";
-	# print "$file_2\n";
 	my $file_a = $pp_dir . $file_1;
 	my $file_b = $itraq_dir . $file_2;
-	# print $file_a;
-	# print $file_b;
 	my $outfile = $comp . "_comparison";
 	open(IN1, "$file_a") or die $!;
-	# open(IN2, "$file_b") or die $!;
+	open(IN2, "$file_b") or die $!;
 	open(OUT,">$dir\\$outfile") or die $!;
 	
 	my @pp=<IN1>;
@@ -93,7 +88,6 @@ sub compare {
 	
 	# Author - Suruchi Aggarwal, Pragya Jaiswal
 	
-	open(IN2,"$file_b") or die $!;
 	my @ia=<IN2>;
 	my $header2=shift (@ia);
 	my %ia;
