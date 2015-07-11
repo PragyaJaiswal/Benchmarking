@@ -67,20 +67,19 @@ closedir(QW_DIR);
 
 sub compare {
 	my ($file_1, $file_2, $comp) = @_;
-	# print "$file_1\n";
-	# print "$file_2\n";
 	my $file_a = $pp_dir . $file_1;
 	my $file_b = $qw_dir . $file_2;
-	# print $file_a;
-	# print $file_b;
 	my $outfile = $comp . "_comparison";
 	open(OUT,">$dir\\$outfile") or die $!;
 
+
 	# Author - Suruchi Aggarwal, Pragya Jaiswal
+	
 	open(IN1,$file_a) or die $!;
 	my @pp=<IN1>;
 	my $header=shift(@pp);
 	my %pp;
+
 	foreach my $line(@pp) {
 		chomp $line;
 		my @prpi=split/\t/,$line;
@@ -88,7 +87,7 @@ sub compare {
 			next;		#26 = decoy
 		}
 		
-		my $rt=sprintf("%.2f",($prpi[23]*60));#converting rt in seconds
+		my $rt=sprintf("%.2f",($prpi[23]*60));	#converting rt in seconds
 		my $mz=sprintf("%.2f",$prpi[17]);
 		$pp{$rt}{$mz}=$line;
 	}
@@ -98,6 +97,7 @@ sub compare {
 	my @QW=<IN2>;
 	my $header2=shift(@QW);
 	my %qw;
+
 	foreach my $line(@QW) {
 		chomp $line;
 		my @qwl=split/\t/,$line;
@@ -106,14 +106,15 @@ sub compare {
 		my $RT=sprintf("%.2f",$qwl[1]);
 		$qw{$RT}{$mz}=$line;
 	}
-
 	
 	print OUT "RT\tPP_RT\tQW_RT\tMZ\tPP_MZ\tQW_MZ\tPP_title\tQW_title\t";
+	
 	chomp $header2;
 	my @QW_head=split/\t/,$header2;
 	for(my $i=3;$i<@QW_head;$i++) {
 		print OUT "QW_$QW_head[$i]\t";
 	}
+
 	chomp $header;
 	my @pp_head=split/\t/,$header;
 	for(my $i=26;$i<@pp_head-1;$i++) {
@@ -136,11 +137,8 @@ sub compare {
 						print OUT "$line1[$i]\t";
 					}
 					print OUT "\n";
-				}
-				
+				}	
 			}
-			
 		}
-		
 	}
 }
